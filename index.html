@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lerncheck: Die vibrierende Getriebewelle</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .fade-in { animation: fadeIn 0.5s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .correct { border: 2px solid #10b981; background-color: #ecfdf5; }
+        .wrong { border: 2px solid #ef4444; background-color: #fef2f2; }
+        .option-btn:disabled { cursor: not-allowed; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col font-sans">
+
+    <!-- Header -->
+    <header class="bg-blue-700 text-white p-4 shadow-md">
+        <div class="container mx-auto flex justify-between items-center px-2">
+            <div>
+                <h1 class="text-lg md:text-xl font-bold uppercase tracking-tight">Interaktiver Lerncheck</h1>
+                <p class="text-xs text-blue-200">Thema: Zerspankräfte & Spannmittel</p>
+            </div>
+            <div id="progress" class="text-sm bg-blue-800 px-3 py-1 rounded-full font-mono">Frage 1 / 13</div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow container mx-auto px-4 py-6 max-w-3xl">
+        <div id="quiz-container" class="bg-white rounded-2xl shadow-xl border border-slate-200 p-6 md:p-10 fade-in">
+            
+            <!-- Question View -->
+            <div id="question-box">
+                <div id="category" class="inline-block px-2 py-1 rounded bg-blue-100 text-blue-700 text-[10px] font-bold uppercase mb-4 tracking-widest">Kategorie</div>
+                <h2 id="question-text" class="text-xl md:text-2xl font-bold mb-8 text-slate-800 leading-snug">Lade Frage...</h2>
+                
+                <div id="options" class="space-y-4">
+                    <!-- Options injected here -->
+                </div>
+
+                <div id="feedback" class="mt-8 hidden rounded-xl p-5 border-l-4 transition-all duration-300">
+                    <div class="flex items-start">
+                        <div id="feedback-icon" class="text-2xl mr-4"></div>
+                        <div>
+                            <p id="feedback-title" class="font-bold text-lg mb-1"></p>
+                            <p id="feedback-text" class="text-sm md:text-base leading-relaxed text-slate-700"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Summary View -->
+            <div id="summary" class="hidden text-center py-10">
+                <div class="w-20 h-20 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl">🏆</div>
+                <h2 class="text-3xl font-bold mb-2 text-slate-800">Check abgeschlossen!</h2>
+                <p class="text-slate-500 mb-8">Du hast die Analyse der vibrierenden Welle beendet.</p>
+                <div id="score-display" class="text-6xl font-black text-blue-700 mb-10">0 / 0</div>
+                <button onclick="location.reload()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-10 rounded-xl transition-all shadow-lg hover:shadow-blue-200">
+                    Training Neustarten
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Navigation -->
+    <footer class="p-6 pb-10">
+        <div class="container mx-auto flex justify-center">
+            <button id="next-btn" class="hidden bg-slate-800 hover:bg-slate-900 text-white font-bold py-4 px-12 rounded-xl shadow-xl transition-all transform active:scale-95 flex items-center">
+                <span>Nächste Frage</span>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+                </svg>
+            </button>
+        </div>
+    </footer>
+
+    <script>
+        const questions = [
+            {
+                category: "Zerspankräfte",
+                question: "In welche drei Komponenten lässt sich die Zerspankraft Fe beim Längsdrehen zerlegen?",
+                options: [
+                    "Schnittkraft, Vorschubkraft und Passivkraft",
+                    "Hauptkraft, Nebenkraft und Querkraft",
+                    "Druckkraft, Zugkraft und Scherkraft"
+                ],
+                correct: 0,
+                explanation: "Die Zerspankraft Fe wird im Raum in die drei orthogonalen Komponenten Schnittkraft (Fc), Vorschubkraft (Ff) und Passivkraft (Fp) zerlegt. Dies ist notwendig, um die Stabilität der Maschine und des Werkstücks zu beurteilen."
+            },
+            {
+                category: "Spannmittel & Stabilität",
+                question: "Warum werden beim Schlichten oft 'weiche Backen' im Dreibackenfutter eingesetzt?",
+                options: [
+                    "Weil sie billiger in der Anschaffung sind",
+                    "Um Druckstellen auf bereits bearbeiteten Flächen zu vermeiden und eine hohe Rundlaufgenauigkeit zu erzielen",
+                    "Damit das Werkstück bei Vibrationen besser 'nachgeben' kann"
+                ],
+                correct: 1,
+                explanation: "Weiche Backen werden im Futter auf den Spanndurchmesser ausgedreht. Dies schont die Oberfläche (keine Abdrücke) und sorgt für einen nahezu perfekten Rundlauf des Werkstücks."
+            },
+            {
+                category: "Problem-Analyse",
+                question: "Das Werkzeug wird in der Halterung verschoben. Welche Kraft ist hierfür meist verantwortlich?",
+                options: [
+                    "Die Schnittkraft (Fc), da sie die größte Komponente ist",
+                    "Die Passivkraft (Fp), da sie senkrecht wirkt",
+                    "Die Fliehkraft bei hoher Drehzahl"
+                ],
+                correct: 0,
+                explanation: "Die Schnittkraft Fc wirkt in Richtung der Hauptbewegung. Da sie die betragsmäßig größte Kraftkomponente ist, kann sie bei unzureichender Klemmung das Werkzeug aus seiner Position drücken."
+            },
+            {
+                category: "Spannmittel: Spitzen",
+                question: "Welchen wesentlichen Vorteil bietet das 'Spannen zwischen Spitzen'?",
+                options: [
+                    "Man spart sich das Kühlmittel",
+                    "Höchste Rundlaufgenauigkeit, auch wenn das Werkstück zum Zwischenmessen entnommen und wieder eingesetzt wird",
+                    "Die Schnittgeschwindigkeit kann verdoppelt werden"
+                ],
+                correct: 1,
+                explanation: "Da das Werkstück über Zentrierbohrungen und Spitzen fixiert wird, ist die Position zur Drehachse immer identisch. Ein Nachteil ist jedoch, dass die Stirnseiten nicht in der gleichen Aufspannung bearbeitet werden können."
+            },
+            {
+                category: "Kräfte & Geometrie",
+                question: "Wie wirkt sich ein stumpfes Werkzeug auf die Passivkraft Fp aus?",
+                options: [
+                    "Fp sinkt, da das Werkzeug nicht mehr schneidet",
+                    "Fp steigt überproportional an, was die Abdrängung und Schwingungsneigung massiv erhöht",
+                    "Die Kräfte bleiben gleich, aber die Temperatur sinkt"
+                ],
+                correct: 1,
+                explanation: "Verschleiß an der Schneide führt zu einer Vergrößerung der Kontaktfläche. Dies erhöht den Eindringwiderstand (Passivkraft), was bei dünnen Wellen zu den gefürchteten Rattermarken führt."
+            },
+            {
+                category: "Spannmittel: Mitnehmer",
+                question: "Wann setzt man einen 'Stirnseitenmitnehmer' ein?",
+                options: [
+                    "Wenn man die gesamte Außenkontur eines Werkstücks in einer einzigen Aufspannung überdrehen will",
+                    "Nur bei sehr kurzen Werkstücken unter 10 mm",
+                    "Wenn man kein Dreibackenfutter besitzt"
+                ],
+                correct: 0,
+                explanation: "Der Stirnseitenmitnehmer greift in die Stirnseite des Werkstücks. Dadurch liegen keine Spannbacken am Umfang an, und das Werkzeug kann die komplette Länge ohne abzusetzen bearbeiten."
+            },
+            {
+                category: "Spannmittel: Lünetten",
+                question: "Was ist der Hauptunterschied zwischen einer feststehenden und einer mitlaufenden Lünette?",
+                options: [
+                    "Es gibt keinen Unterschied, nur der Name ist anders",
+                    "Die feststehende wird am Bett geklemmt; die mitlaufende ist am Schlitten befestigt und stützt direkt an der Wirkstelle",
+                    "Feststehende Lünetten sind nur für Holzbearbeitung gedacht"
+                ],
+                correct: 1,
+                explanation: "Die mitlaufende Lünette (Setzstock) stützt das Werkstück unmittelbar gegenüber dem Drehmeißel ab. So wird verhindert, dass die Passivkraft die Welle während des Schnitts wegdrückt."
+            },
+            {
+                category: "Fehleranalyse",
+                question: "Die Welle ist mittig 0,15 mm dünner (konkav). Wie erklärt sich dieser spezifische Formfehler?",
+                options: [
+                    "Durch Wärmeschrumpfung nach dem Abkühlen",
+                    "Das Werkstück biegt sich durch Kräfte und Schwingungen in der Mitte am stärksten durch, was zu Resonanzeffekten führt",
+                    "Das Werkzeug war in der Mitte der Welle schärfer"
+                ],
+                correct: 1,
+                explanation: "Lange Wellen haben in der Mitte ihre geringste Steifigkeit. Die Kombination aus elastischer Durchbiegung und selbsterregten Schwingungen (Rattern) führt dazu, dass das Maß in der Mitte vom Sollwert abweicht."
+            },
+            {
+                category: "Spannmittel: Reitstock",
+                question: "Wozu dient der Reitstock beim Drehen langer Werkstücke?",
+                options: [
+                    "Zum Auffangen von Spänen",
+                    "Zur Aufnahme einer Zentrierspitze, um das Werkstück auf der zweiten Stirnseite abzustützen",
+                    "Um die Drehmaschine im Gleichgewicht zu halten"
+                ],
+                correct: 1,
+                explanation: "Der Reitstock verhindert das radiale Ausweichen des Werkstückendes. Ohne diese Abstützung wäre die Bearbeitung der 270 mm langen Welle (Auskragung!) unmöglich."
+            },
+            {
+                category: "Spannmittel: Zentrierbohrung",
+                question: "Welchen Formfehler verhindert die Zentrierspitze primär?",
+                options: [
+                    "Dass das Werkstück 'eiert' oder durch die Schnittkraft weggedrückt wird",
+                    "Dass das Werkstück zu heiß wird",
+                    "Dass die Späne zu lang werden"
+                ],
+                correct: 0,
+                explanation: "Die Zentrierspitze bildet ein Gegenlager zum Futter. Sie nimmt vor allem die Passivkraft Fp und Teile der Schnittkraft Fc auf, sodass das Werkstück stabil in der Drehachse bleibt."
+            },
+            {
+                category: "Spannmittel: Vergleich",
+                question: "Was ist ein Nachteil beim Spannen im Dreibackenfutter gegenüber dem Spannen zwischen Spitzen?",
+                options: [
+                    "Es geht schneller",
+                    "Die Rundlaufgenauigkeit beim Umspannen (Wenden des Teils) ist schlechter",
+                    "Man kann keine hohen Drehzahlen fahren"
+                ],
+                correct: 1,
+                explanation: "Wenn ein Werkstück im Futter ausgespannt und gewendet wird, entsteht fast immer ein kleiner Versatz (Rundlauffehler). Beim Spannen zwischen Spitzen bleibt das Teil immer perfekt zentriert."
+            },
+            {
+                category: "Schnittwerte",
+                question: "Warum verschlechtern zu niedrige Schnittgeschwindigkeiten oft die Oberfläche?",
+                options: [
+                    "Weil das Werkzeug dann einschläft",
+                    "Es kann zur Aufbauschneidenbildung kommen, was die Oberflächengüte (Ra 0,8) zerstört",
+                    "Weil die Maschine dann mehr Strom verbraucht"
+                ],
+                correct: 1,
+                explanation: "Bei zu geringer Geschwindigkeit verklebt der Werkstoff mit der Schneide (Aufbauschneide). Diese bricht periodisch ab und hinterlässt eine raue Oberfläche, die die geforderte Qualität verhindert."
+            },
+            {
+                category: "Spannmittel: Setzstock",
+                question: "Wann entscheidet man sich für einen Setzstock (Lünette)?",
+                options: [
+                    "Bei instabilen, langen Werkstücken, um Durchbiegung und Schwingungen zu dämpfen",
+                    "Immer wenn man Stahl dreht",
+                    "Nur wenn man mit zwei Werkzeugen gleichzeitig arbeitet"
+                ],
+                correct: 0,
+                explanation: "Der Setzstock ist das letzte Mittel zur Stabilisierung, wenn die Welle so lang oder dünn ist, dass selbst die Zentrierspitze allein keine schwingungsfreie Bearbeitung mehr garantiert."
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let answered = false;
+
+        const qContainer = document.getElementById('quiz-container');
+        const qBox = document.getElementById('question-box');
+        const summary = document.getElementById('summary');
+        const catLabel = document.getElementById('category');
+        const qText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options');
+        const feedbackBox = document.getElementById('feedback');
+        const feedbackTitle = document.getElementById('feedback-title');
+        const feedbackText = document.getElementById('feedback-text');
+        const feedbackIcon = document.getElementById('feedback-icon');
+        const nextBtn = document.getElementById('next-btn');
+        const progressLabel = document.getElementById('progress');
+        const scoreDisplay = document.getElementById('score-display');
+
+        function loadQuestion() {
+            const q = questions[currentQuestion];
+            answered = false;
+            
+            qContainer.classList.remove('fade-in');
+            void qContainer.offsetWidth; 
+            qContainer.classList.add('fade-in');
+
+            catLabel.innerText = q.category;
+            qText.innerText = q.question;
+            progressLabel.innerText = `Frage ${currentQuestion + 1} / ${questions.length}`;
+            
+            optionsContainer.innerHTML = '';
+            q.options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = "option-btn w-full text-left p-4 md:p-5 rounded-xl border-2 border-slate-100 bg-slate-50 hover:border-blue-300 hover:bg-blue-50 transition-all flex items-center group shadow-sm";
+                btn.innerHTML = `
+                    <span class="flex-shrink-0 w-10 h-10 rounded-lg bg-white border border-slate-200 flex items-center justify-center mr-4 group-hover:border-blue-200 font-bold text-slate-400 group-hover:text-blue-500 transition-colors">${String.fromCharCode(65 + index)}</span>
+                    <span class="text-sm md:text-base font-medium text-slate-700">${opt}</span>
+                `;
+                btn.onclick = () => checkAnswer(index);
+                optionsContainer.appendChild(btn);
+            });
+
+            feedbackBox.classList.add('hidden');
+            nextBtn.classList.add('hidden');
+        }
+
+        function checkAnswer(index) {
+            if (answered) return;
+            answered = true;
+
+            const q = questions[currentQuestion];
+            const buttons = optionsContainer.querySelectorAll('button');
+            
+            if (index === q.correct) {
+                score++;
+                buttons[index].classList.add('correct');
+                buttons[index].classList.remove('bg-slate-50', 'border-slate-100');
+                showFeedback(true, q.explanation);
+            } else {
+                buttons[index].classList.add('wrong');
+                buttons[index].classList.remove('bg-slate-50', 'border-slate-100');
+                buttons[q.correct].classList.add('correct');
+                buttons[q.correct].classList.remove('bg-slate-50', 'border-slate-100');
+                showFeedback(false, q.explanation);
+            }
+
+            buttons.forEach(btn => btn.disabled = true);
+            nextBtn.classList.remove('hidden');
+        }
+
+        function showFeedback(isCorrect, text) {
+            feedbackBox.classList.remove('hidden', 'border-green-500', 'bg-green-50', 'border-red-500', 'bg-red-50');
+            
+            if (isCorrect) {
+                feedbackBox.classList.add('border-green-500', 'bg-green-50');
+                feedbackTitle.innerText = "Richtig!";
+                feedbackTitle.className = "font-bold text-lg mb-1 text-green-700";
+                feedbackIcon.innerHTML = "✨";
+            } else {
+                feedbackBox.classList.add('border-red-500', 'bg-red-50');
+                feedbackTitle.innerText = "Lösungsweg:";
+                feedbackTitle.className = "font-bold text-lg mb-1 text-red-700";
+                feedbackIcon.innerHTML = "💡";
+            }
+            
+            feedbackText.innerText = text;
+        }
+
+        nextBtn.onclick = () => {
+            currentQuestion++;
+            if (currentQuestion < questions.length) {
+                loadQuestion();
+            } else {
+                showSummary();
+            }
+        };
+
+        function showSummary() {
+            qBox.classList.add('hidden');
+            nextBtn.classList.add('hidden');
+            summary.classList.remove('hidden');
+            progressLabel.classList.add('hidden');
+            scoreDisplay.innerText = `${score} / ${questions.length}`;
+        }
+
+        window.onload = loadQuestion;
+    </script>
+</body>
+</html>
